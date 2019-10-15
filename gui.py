@@ -142,6 +142,10 @@ class Application(tk.Frame):
             self.error_textvar.set('Number of constellations not an integer')
             return
 
+        if constellations > n:
+            self.error_textvar.set('Stars must be greater than constellations')
+            return
+
         try:
             probability = float(self.prob_textvar.get())
             if probability > 1.0 or probability < 0.0:
