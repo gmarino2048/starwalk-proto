@@ -27,6 +27,7 @@ class Application(tk.Frame):
 
         self.create_n_textbox()
         self.create_constellation_textbox()
+        self.create_probability_textbox()
 
     def create_canvas(self):
         if self.width is None:
@@ -99,6 +100,22 @@ class Application(tk.Frame):
         self.const_textvar.set(20)
         self.const_label.pack(side = 'left', fill = 'y')
         self.const_textbox.pack(side = 'left', fill = 'y')
+
+    def create_probability_textbox(self):
+        self.prob_textvar = tk.StringVar()
+        self.prob_label = tk.Label(
+            self.menu,
+            text = 'Inclusion Probability:'
+        )
+        self.prob_textbox = tk.Entry(
+            self.menu,
+            width = '4',
+            textvariable = self.prob_textvar
+        )
+        self.prob_textvar.set(0.9)
+        self.prob_label.pack(side = 'left', fill = 'y')
+        self.prob_textbox.pack(side = 'left', fill = 'y')
+
     
     def draw(self):
         n = int(self.n_textvar.get())
