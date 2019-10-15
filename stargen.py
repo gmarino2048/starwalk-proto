@@ -19,6 +19,17 @@ class Star:
 
         return sqrt(x_squared + y_squared)
 
+    def __add__(self, other):
+        this_x, other_x = self.get_x(), other.get_x()
+        this_y, other_y = self.get_y(), other.get_y()
+        return Star(this_x + other_x, this_y + other_y)
+
+    def __sub__(self, other):
+        this_x, this_y = self.get_x(), self.get_y()
+        other_x, other_y = other.get_x(), other.get_y()
+
+        return Star(this_x - other_x, this_y - other_y)
+
 
 def generate_stars(n: int, limits: (int, int), should_floor: bool = False) -> [Star]:
     star_list = []

@@ -26,6 +26,7 @@ class Application(tk.Frame):
         self.create_quit_button()
 
         self.create_n_textbox()
+        self.create_constellation_textbox()
 
     def create_canvas(self):
         if self.width is None:
@@ -83,13 +84,26 @@ class Application(tk.Frame):
         self.n_textvar.set('200')
         self.n_label.pack(side = 'left', fill='y')
         self.n_textbox.pack(side = 'left', fill='y')
+
+    def create_constellation_textbox(self):
+        self.const_textvar = tk.StringVar()
+        self.const_label = tk.Label(
+            self.menu,
+            text = 'Number of Constellations:'
+        )
+        self.const_textbox = tk.Entry(
+            self.menu,
+            width = '4',
+            textvariable = self.const_textvar
+        )
+        self.const_textvar.set(20)
+        self.const_label.pack(side = 'left', fill = 'y')
+        self.const_textbox.pack(side = 'left', fill = 'y')
     
     def draw(self):
         n = int(self.n_textvar.get())
 
-        if not self.star_list is None:
-            for star in self.star_list:
-                self._draw_star(star, 'black')
+        self.canvas.delete('all')
 
         # We only want rounded numbers in the list of stars
         self.star_list = generate_stars(n, (self.width, self.height), should_floor=True)
