@@ -13,14 +13,14 @@ class Star:
     def get_y(self):
         return self.y
 
-    def dist(self, other: Star):
+    def dist(self, other):
         x_squared = (self.x - other.x) ^ 2
         y_squared = (self.y - other.y) ^ 2
 
         return sqrt(x_squared + y_squared)
 
 
-def generate_stars(n: int, limits: (int, int), floor: bool = False) -> [Star]:
+def generate_stars(n: int, limits: (int, int), should_floor: bool = False) -> [Star]:
     star_list = []
 
     for _ in range(n):
@@ -28,7 +28,7 @@ def generate_stars(n: int, limits: (int, int), floor: bool = False) -> [Star]:
         x = random() * limits[0]
         y = random() * limits[1]
 
-        if floor:
+        if should_floor:
             x = floor(x)
             y = floor(y)
         

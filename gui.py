@@ -1,6 +1,10 @@
 
 import tkinter as tk
 
+from stargen import Star, generate_stars
+
+from math import floor
+
 class Application(tk.Frame):
 
     def __init__(self, 
@@ -11,6 +15,7 @@ class Application(tk.Frame):
         self.master = master
         self.width = width
         self.height = height
+        self.star_list = None
         self.pack()
         self.set_up()
         
@@ -24,9 +29,9 @@ class Application(tk.Frame):
 
     def create_canvas(self):
         if self.width is None:
-            self.width = 600
+            self.width = 1200
         if self.height is None:
-            self.height = 400
+            self.height = 800
         
         self.canvas = tk.Canvas(
             self,
@@ -80,4 +85,31 @@ class Application(tk.Frame):
         self.n_textbox.pack(side = 'left', fill='y')
     
     def draw(self):
-        print("Not yet implemented")
+        n = int(self.n_textvar.get())
+
+        if not self.star_list is None:
+            for star in self.star_list:
+                self._draw_star(star, 'black')
+
+        # We only want rounded numbers in the list of stars
+        self.star_list = generate_stars(n, (self.width, self.height), should_floor=True)
+        for star in self.star_list:
+            self._draw_star(star, 'white')
+
+    def _draw_star(self, star: Star, color: str):
+        x = star.get_x()
+        y = star.get_y()
+
+        # Define some arbitrary radius
+        diameter = 5
+
+        start_x = floor(x - (diameter / 2))
+        start_y = floor(y - (diameter / 2))
+
+        self.canvas.create_oval(
+            start_x,
+            start_y,
+            start_x + diameter,
+            start_y + diameter,
+            fill = color
+        )
