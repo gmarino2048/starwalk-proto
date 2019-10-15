@@ -129,14 +129,37 @@ class Application(tk.Frame):
         self.error_label.pack(side = 'right', fill = 'y', padx = '10')
     
     def draw(self):
-        n = int(self.n_textvar.get())
+        # Begin error checking section
+        try: 
+            n = int(self.n_textvar.get())
+        except:
+            self.error_textvar.set('Number of stars not an integer')
+            return
 
+        try: 
+            constellations = int(self.const_textvar.get())
+        except:
+            self.error_textvar.set('Number of constellations not an integer')
+            return
+
+        try:
+            probability = float(self.prob_textvar.get())
+            if probability > 1.0 or probability < 0.0:
+                self.error_textvar.set('Probability must be between 0 and 1')
+                return
+        except:
+            self.error_textvar.set('Inclusion probability is not a float')
+            return
+
+        # End error checking section
+        self.error_textvar.set('')
         self.canvas.delete('all')
 
         # We only want rounded numbers in the list of stars
         self.star_list = generate_stars(n, (self.width, self.height), should_floor=True)
         for star in self.star_list:
             self._draw_star(star, 'white')
+        
 
     def _draw_star(self, star: Star, color: str):
         x = star.get_x()
