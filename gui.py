@@ -29,6 +29,8 @@ class Application(tk.Frame):
         self.create_constellation_textbox()
         self.create_probability_textbox()
 
+        self.create_error_label()
+
     def create_canvas(self):
         if self.width is None:
             self.width = 1200
@@ -116,6 +118,15 @@ class Application(tk.Frame):
         self.prob_label.pack(side = 'left', fill = 'y')
         self.prob_textbox.pack(side = 'left', fill = 'y')
 
+    def create_error_label(self):
+        self.error_textvar = tk.StringVar()
+        self.error_label = tk.Label(
+            self.menu,
+            textvariable = self.error_textvar,
+            fg = 'red'
+        )
+        self.error_textvar.set('')
+        self.error_label.pack(side = 'right', fill = 'y', padx = '10')
     
     def draw(self):
         n = int(self.n_textvar.get())
