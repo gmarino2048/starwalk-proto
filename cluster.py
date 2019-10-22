@@ -45,7 +45,7 @@ def cluster (stars: [Star], size: int, inclusion: float) -> [Cluster]:
 
     # Randomly select stars to be the starting point for each major cluster
     for _ in range(size):
-        starter = random.choice(stars)
+        starter = random.choice(remaining_stars)
         clusters.append(Cluster(starter))
 
         remaining_stars.remove(starter)
