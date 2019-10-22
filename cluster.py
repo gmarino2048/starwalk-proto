@@ -32,59 +32,28 @@ class Cluster:
 
         return sum_x / (this_size + other_size), sum_y / (this_size + other_size)
 
+    def dist(self, other):
+        x_dist = abs(self.x() - other.x())
+        y_dist = abs(self.y() - other.y())
+
+        return x_dist + y_dist
 
 
 def cluster (stars: [Star], size: int, inclusion: float) -> [Cluster]:
     clusters = []
-    new_clusters = []
+    remaining_stars = copy(stars)
 
-    for star in stars:
-        if random.random() < inclusion:
-            clusters.append([Cluster(star), True])
+    # Randomly select stars to be the starting point for each major cluster
+    for _ in range(size):
+        starter = random.choice(stars)
+        clusters.append(Cluster(starter))
 
-    while len(clusters) > size:
-        length = len(clusters)
+        remaining_stars.remove(starter)
 
-        for tup in clusters:
-            if not tup[1]:
-                continue
+    # Assign stars to the closest cluster
+    for star in remaining_stars:
+        new_cluster = Cluster(star)
+        closest = min(clusters, key = lambda clust: clust.dist(new_cluster))
+        closest.absorb(new_cluster)
 
-            cluster = tup[0]
-            tup[1] = False
-
-            min_dist = math.inf
-            closest = None
-
-            for other_tup in clusters:
-                if not other_tup[1]:
-                    continue
-
-                other = other_tup[0]
-                dist = abs(cluster.x() - other.x()) + abs(cluster.y() - other.y())
-
-                if dist < min_dist:
-                    closest = other_tup
-
-            if closest is None:
-                new_clusters.append(cluster)
-                break
-
-            closest[1] = False
-            cluster.absorb(closest[0])
-
-            new_clusters.append(cluster)
-
-            remaining = [item for item in clusters if item[1]]
-            if len(remaining) + len(new_clusters) <= size:
-                remaining_clusters = [item[0] for item in remaining]
-                new_clusters.extend(remaining_clusters)
-                return new_clusters
-
-        if len(new_clusters) < size:
-            break
-
-        clusters = [[cluster, True] for cluster in new_clusters]
-        new_clusters = []
-        pass
-
-    return new_clusters
+    return clusters
