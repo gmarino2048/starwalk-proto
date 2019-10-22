@@ -197,10 +197,19 @@ class Application(tk.Frame):
         for tup in connected:
             distances = [(dist(tup[0], item[0]), item) for item in connected if item != tup]
 
+            #Abort if there's fewer than one star in the list
+            if len(distances) == 0:
+                continue
+
             min_dist = min(distances, key=lambda item: item[0])
 
             if min_dist[1][1]:
                 distances.remove(min_dist)
+
+                #Abort if there was only one item in the list
+                if len(distances) == 0:
+                    continue
+
                 min_dist = min(distances, key=lambda item: item[0])
 
             star = tup[0]
