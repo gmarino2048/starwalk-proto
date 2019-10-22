@@ -32,6 +32,11 @@ class Cluster:
 
         return sum_x / (this_size + other_size), sum_y / (this_size + other_size)
 
+    def dist(self, other):
+        x_dist = abs(self.x() - other.x())
+        y_dist = abs(self.y() - other.y())
+
+        return x_dist + y_dist
 
 
 def cluster (stars: [Star], size: int, inclusion: float) -> [Cluster]:
