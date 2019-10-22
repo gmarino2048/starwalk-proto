@@ -168,6 +168,9 @@ class Application(tk.Frame):
         # Cluster all of the stars together using agglomerative clustering
         clusters = cluster(self.star_list, constellations, probability)
 
+        for clust in clusters:
+            self._draw_constellation(clust, 'white')
+
     def _draw_star(self, star: Star, color: str):
         x = star.get_x()
         y = star.get_y()
@@ -185,3 +188,29 @@ class Application(tk.Frame):
             start_y + diameter,
             fill = color
         )
+
+    def _draw_constellation(self, const: Cluster, color: str):
+        connected = [[star, False] for star in const.stars]
+
+        dist = lambda s1, s2: abs(s1.get_x() - s2.get_x()) + abs(s1.get_y() - s2.get_y())
+
+        for tup in connected:
+            distances = [(dist(tup[0], item[0]), item) for item in connected if item != tup]
+
+            min_dist = min(distances, key=lambda item: item[0])
+
+            if min_dist[1][1]:
+                distances.remove(min_dist)
+                min_dist = min(distances, key=lambda item: item[0])
+
+            star = tup[0]
+            other = min_dist[1][0]
+
+            self.canvas.create_line(
+                star.get_x(), star.get_y(),
+                other.get_x(), other.get_y(),
+                fill = color
+            )
+
+            tup[1] = True
+            min_dist[1][1] = True
