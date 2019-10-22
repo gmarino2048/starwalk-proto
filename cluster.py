@@ -20,12 +20,12 @@ class Cluster:
     def y(self):
         return self.centroid[1]
 
-    def absorb(self, cluster: Cluster):
+    def absorb(self, cluster):
         self.centroid = self._weighted_centroid(cluster)
         self.objects = self.objects + cluster.objects
         self.stars.extend(cluster.stars)
 
-    def _weighted_centroid(self, cluster: Cluster):
+    def _weighted_centroid(self, cluster):
         this_size, other_size = self.objects, cluster.objects
         sum_x = (self.x() * this_size) + (cluster.x() * other_size)
         sum_y = (self.y() * this_size) + (cluster.y() * other_size)
@@ -39,10 +39,12 @@ def cluster (stars: [Star], size: int, inclusion: float) -> [Cluster]:
     new_clusters = []
 
     for star in stars:
-        if inclusion < random.random():
-            clusters.append((Cluster(star), True))
+        if random.random() < inclusion:
+            clusters.append([Cluster(star), True])
 
     while len(clusters) > size:
+        length = len(clusters)
+
         for tup in clusters:
             if not tup[1]:
                 continue
@@ -71,10 +73,18 @@ def cluster (stars: [Star], size: int, inclusion: float) -> [Cluster]:
             cluster.absorb(closest[0])
 
             new_clusters.append(cluster)
-        
-        if len(new_clusters) > size:
+
+            remaining = [item for item in clusters if item[1]]
+            if len(remaining) + len(new_clusters) <= size:
+                remaining_clusters = [item[0] for item in remaining]
+                new_clusters.extend(remaining_clusters)
+                return new_clusters
+
+        if len(new_clusters) < size:
             break
 
-        clusters = [(cluster, True) for cluster in new_clusters]
+        clusters = [[cluster, True] for cluster in new_clusters]
+        new_clusters = []
+        pass
 
     return new_clusters

@@ -1,6 +1,7 @@
 
 import tkinter as tk
 
+from cluster import Cluster, cluster
 from stargen import Star, generate_stars
 
 from math import floor
@@ -163,7 +164,9 @@ class Application(tk.Frame):
         self.star_list = generate_stars(n, (self.width, self.height), should_floor=True)
         for star in self.star_list:
             self._draw_star(star, 'white')
-        
+
+        # Cluster all of the stars together using agglomerative clustering
+        clusters = cluster(self.star_list, constellations, probability)
 
     def _draw_star(self, star: Star, color: str):
         x = star.get_x()
