@@ -5,6 +5,7 @@ from cluster import Cluster, cluster
 from stargen import Star, generate_stars
 
 from math import floor
+from random import random
 
 class Application(tk.Frame):
 
@@ -17,6 +18,7 @@ class Application(tk.Frame):
         self.width = width
         self.height = height
         self.star_list = None
+        self.cluster_list = None
         self.pack()
         self.set_up()
         
@@ -165,8 +167,11 @@ class Application(tk.Frame):
         for star in self.star_list:
             self._draw_star(star, 'white')
 
+        # Generate the lists to be clustered
+        self.cluster_list = [star for star in self.star_list if random() < probability]
+
         # Cluster all of the stars together using agglomerative clustering
-        clusters = cluster(self.star_list, constellations, probability)
+        clusters = cluster(self.cluster_list, constellations, probability)
 
         for clust in clusters:
             self._draw_constellation(clust, 'white')
