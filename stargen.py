@@ -8,6 +8,7 @@ class Star:
         self.y = y
         self.z = z
 
+        self.min_velocity = 0.75
         self.set_velocity(velocity)
 
     def __eq__(self, other):
@@ -25,8 +26,11 @@ class Star:
     def set_velocity(self, velocity: (float, float)) -> (float, float):
         # This is where we can scale the velocity by the z-axis
         # TODO: Experiment with other algorithms here
-        x_vel = velocity[0] * self.z
-        y_vel = velocity[1] * self.z
+        workable_room = 1.0 - self.min_velocity
+        multiplier = self.min_velocity + (workable_room * self.z)
+        
+        x_vel = velocity[0] * multiplier
+        y_vel = velocity[1] * multiplier
 
         self.velocity = (x_vel, y_vel)
 
