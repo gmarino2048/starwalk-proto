@@ -223,7 +223,7 @@ class Application(tk.Frame):
         self.clusters = cluster(self.cluster_list, constellations, probability)
 
         for clust in self.clusters:
-            self._draw_constellation(clust, 'white')
+            clust.generate_map()
 
         # Start the movement thread
         self.move_stars()
@@ -247,36 +247,9 @@ class Application(tk.Frame):
         )
 
     def _draw_constellation(self, const: Cluster, color: str):
-        connected = [[star, False] for star in const.stars]
-
-        dist = lambda s1, s2: abs(s1.get_x() - s2.get_x()) + abs(s1.get_y() - s2.get_y())
-
-        for tup in connected:
-            distances = [(dist(tup[0], item[0]), item) for item in connected if item != tup]
-
-            #Abort if there's fewer than one star in the list
-            if len(distances) == 0:
-                continue
-
-            min_dist = min(distances, key=lambda item: item[0])
-
-            if min_dist[1][1]:
-                distances.remove(min_dist)
-
-                #Abort if there was only one item in the list
-                if len(distances) == 0:
-                    continue
-
-                min_dist = min(distances, key=lambda item: item[0])
-
-            star = tup[0]
-            other = min_dist[1][0]
-
+        for star, other in const.mapping:
             self.canvas.create_line(
                 star.get_x(), star.get_y(),
                 other.get_x(), other.get_y(),
                 fill = color
             )
-
-            tup[1] = True
-            min_dist[1][1] = True
