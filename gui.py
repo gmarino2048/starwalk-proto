@@ -1,11 +1,13 @@
 
 import tkinter as tk
+import threading
 
 from cluster import Cluster, cluster
 from stargen import Star, generate_stars
 
 from math import floor
 from random import random
+from time import sleep
 
 class Application(tk.Frame):
 
@@ -19,9 +21,12 @@ class Application(tk.Frame):
         self.height = height
         self.star_list = None
         self.cluster_list = None
+        self.clusters = None
         self.diameter_range = (4, 6)
         self.pack()
         self.set_up()
+
+        self.move_after_id = None
         
     def set_up(self):
         self.create_canvas()
@@ -148,9 +153,24 @@ class Application(tk.Frame):
         self.error_textvar.set('')
         self.error_label.pack(side = 'right', fill = 'y', padx = '10')
 
-    
+    def move_stars(self):
+        for star in self.star_list:
+            star.move()
+        
+        self.canvas.delete('all')
+        for star in self.star_list:
+            self._draw_star(star, 'white')
+        
+        for constellation in self.clusters:
+            self._draw_constellation(constellation, 'white')
+        
+        self.move_after_id = self.master.after(10, self.move_stars)
     
     def draw(self):
+        # Stop the animation
+        if not self.move_after_id is None:
+            self.master.after_cancel(self.move_after_id)
+            
         # Begin error checking section
         try: 
             n = int(self.n_textvar.get())
@@ -200,10 +220,13 @@ class Application(tk.Frame):
         self.cluster_list = [star for star in self.star_list if random() < probability]
 
         # Cluster all of the stars together using agglomerative clustering
-        clusters = cluster(self.cluster_list, constellations, probability)
+        self.clusters = cluster(self.cluster_list, constellations, probability)
 
-        for clust in clusters:
+        for clust in self.clusters:
             self._draw_constellation(clust, 'white')
+
+        # Start the movement thread
+        self.move_stars()
 
     def _draw_star(self, star: Star, color: str):
         x = star.get_x()
