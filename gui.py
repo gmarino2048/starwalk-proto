@@ -19,6 +19,7 @@ class Application(tk.Frame):
         self.height = height
         self.star_list = None
         self.cluster_list = None
+        self.diameter_range = (4, 6)
         self.pack()
         self.set_up()
         
@@ -31,12 +32,13 @@ class Application(tk.Frame):
         self.create_n_textbox()
         self.create_constellation_textbox()
         self.create_probability_textbox()
+        self.create_velocity_textbox()
 
         self.create_error_label()
 
     def create_canvas(self):
         if self.width is None:
-            self.width = 1200
+            self.width = 1500
         if self.height is None:
             self.height = 800
         
@@ -121,6 +123,21 @@ class Application(tk.Frame):
         self.prob_label.pack(side = 'left', fill = 'y')
         self.prob_textbox.pack(side = 'left', fill = 'y')
 
+    def create_velocity_textbox(self):
+        self.velocity_textvar = tk.StringVar()
+        self.velocity_label = tk.Label(
+            self.menu,
+            text = 'Velocity (x,y)'
+        )
+        self.velocity_textbox = tk.Entry(
+            self.menu,
+            width = 6,
+            textvariable = self.velocity_textvar
+        )
+        self.velocity_textvar.set('1,1')
+        self.velocity_label.pack(side = 'left', fill = 'y')
+        self.velocity_textbox.pack(side = 'left', fill = 'y')
+
     def create_error_label(self):
         self.error_textvar = tk.StringVar()
         self.error_label = tk.Label(
@@ -130,6 +147,8 @@ class Application(tk.Frame):
         )
         self.error_textvar.set('')
         self.error_label.pack(side = 'right', fill = 'y', padx = '10')
+
+    
     
     def draw(self):
         # Begin error checking section
@@ -158,12 +177,22 @@ class Application(tk.Frame):
             self.error_textvar.set('Inclusion probability is not a float')
             return
 
+        try:
+            values = self.velocity_textvar.get().split(',')
+            if len(values) < 2:
+                self.error_textvar.set('Ensure there are two values for velocity, separated by ","')
+                return
+            velocity = (float(values[0]), float(values[1]))
+        except:
+            self.error_textvar.set('Could not set velocity. Ensure both values are floats')
+            return
+
         # End error checking section
         self.error_textvar.set('')
         self.canvas.delete('all')
 
         # We only want rounded numbers in the list of stars
-        self.star_list = generate_stars(n, (self.width, self.height), should_floor=True)
+        self.star_list = generate_stars(n, (self.width, self.height), velocity, should_floor=True)
         for star in self.star_list:
             self._draw_star(star, 'white')
 
@@ -180,8 +209,8 @@ class Application(tk.Frame):
         x = star.get_x()
         y = star.get_y()
 
-        # Define some arbitrary radius
-        diameter = 5
+        diameter_diff = self.diameter_range[1] - self.diameter_range[0]
+        diameter = self.diameter_range[0] + int(round(diameter_diff * star.get_z()))
 
         start_x = floor(x - (diameter / 2))
         start_y = floor(y - (diameter / 2))
